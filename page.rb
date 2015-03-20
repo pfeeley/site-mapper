@@ -1,4 +1,5 @@
 require 'net/http'
+require 'nokogiri'
 
 class Page
 
@@ -6,9 +7,11 @@ class Page
     @location = url
     @content = ""
     @links = []
+    @depth = 0
 
     get_page
     parse_links
+    get_depth
   end
 
   def links
@@ -21,6 +24,7 @@ class Page
     res = Net::HTTP.start(url.host, url.port) { |http| http.request(req) }
     if res.code == "200"
       @content = res.body
+      @location = res.to_hash["content-location"].first
       puts "    Retrieved page #{@location}"
     else
       puts "    Failed with status #{res.code} - #{@location}"
@@ -29,7 +33,15 @@ class Page
 
   def parse_links
     puts "      Getting links from #{@location}"
-    # TODO: get the links out of the body
+    page_content = Nokogiri::HTML(@content)
+    @links = page_content.xpath("//a/@href")
+    puts "      Found #{@links.length} unique links"
+    # TODO: parse the code for meta redirects to get redirect links
+  end
+
+  def get_depth
+    path = URI.parse(@location).path
+    @depth = path.split("/").length
   end
 
 end
