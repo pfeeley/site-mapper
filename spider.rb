@@ -28,13 +28,8 @@ class Spider
     @pages << page
     @links_visited << link
     page.links.each do |link|
-      if URI(link).host == @host and not @links_visited.include?(link)
-        puts link
-        if link.include? @host
-          @links_new << link
-        else
-          @links_new << @host + link
-        end
+      if (URI(link).host == @host and not @links_visited.include?(link)) or URI(link).host.nil?
+        @links_new << 'http://' + @host + URI(link).path
       end
     end
     @links_new -= [link]

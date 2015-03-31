@@ -24,7 +24,6 @@ class Page
     res = Net::HTTP.start(url.host, url.port) { |http| http.request(req) }
     if res.code == "200"
       @content = res.body
-      @location = res.to_hash["content-location"].first
       puts "    Retrieved page #{@location}"
     else
       puts "    Failed with status #{res.code} - #{@location}"
