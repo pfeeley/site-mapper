@@ -3,8 +3,9 @@ require_relative 'mapper'
 
 class Spider
 
-  def initialize(base, links_max = 100)
+  def initialize(base, links_max = 100, map = false)
     @base = base
+    @map = map
     @links_new = [base]
     @links_max = links_max
     @links_visited = []
@@ -40,7 +41,9 @@ class Spider
   end
 
   def create_map
-    Mapper.new(@pages).map
+    if @map
+      Mapper.new(@pages).map
+    end
   end
 
 end
