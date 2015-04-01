@@ -25,6 +25,7 @@ class Spider
   def valid_link(link)
     escaped_link = URI.escape(link.value)
     return false if link.value[0..10] == "javascript:"
+    return false if link.value[0..5] == "mailto"
     valid = false
     valid = true if (URI(escaped_link).host == @host and not @links_visited.include?(escaped_link)) or URI(escaped_link).host.nil?
     return valid 
