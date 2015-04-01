@@ -23,9 +23,10 @@ class Spider
   end
 
   def valid_link(link)
+    escaped_link = URI.escape(link.value)
     return false if link.value[0..10] == "javascript:"
     valid = false
-    valid = true if (URI(link).host == @host and not @links_visited.include?(link)) or URI(link).host.nil?
+    valid = true if (URI(escaped_link).host == @host and not @links_visited.include?(escaped_link)) or URI(escaped_link).host.nil?
     return valid 
   end
 
@@ -37,7 +38,7 @@ class Spider
     @links_visited << link
     page.links.each do |link|
       if valid_link(link)
-        @links_new << 'http://' + @host + URI(link).path.to_s
+        @links_new << 'http://' + @host + URI(URI.escape(link.value)).path.to_s
       end
     end
     @links_new -= [link]
