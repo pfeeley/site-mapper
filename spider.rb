@@ -17,8 +17,16 @@ class Spider
     puts "Crawling URLs from #{@base}"
     while @links_visited.length < @links_max and not @links_new.empty?
       check_link
+      puts "      #{@links_new.length} links remaining"
     end
     create_map
+  end
+
+  def valid_link(link)
+    return false if link.value[0..10] == "javascript:"
+    valid = false
+    valid = true if (URI(link).host == @host and not @links_visited.include?(link)) or URI(link).host.nil?
+    return valid 
   end
 
   def check_link
@@ -28,8 +36,8 @@ class Spider
     @pages << page
     @links_visited << link
     page.links.each do |link|
-      if (URI(link).host == @host and not @links_visited.include?(link)) or URI(link).host.nil?
-        @links_new << 'http://' + @host + URI(link).path
+      if valid_link(link)
+        @links_new << 'http://' + @host + URI(link).path.to_s
       end
     end
     @links_new -= [link]
